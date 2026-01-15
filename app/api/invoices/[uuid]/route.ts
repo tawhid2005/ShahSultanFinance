@@ -4,11 +4,15 @@ import { getInvoiceByUuid } from "@/lib/services/invoice";
 import { getCurrentUser } from "@/lib/server/session";
 import { RBACError } from "@/lib/server/rbac";
 
-export async function GET(_req: Request, { params }: { params: { uuid: string } }) {
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ uuid: string }> },
+) {
+  const { uuid } = await params;
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   try {
-    const invoice = await getInvoiceByUuid(params.uuid);
+    const invoice = await getInvoiceByUuid(uuid);
     if (!invoice) {
       return NextResponse.json({ message: "Invoice not found" }, { status: 404 });
     }
