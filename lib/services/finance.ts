@@ -1,5 +1,4 @@
-import { Decimal } from "@prisma/client/runtime";
-import { InvoiceType, PaymentMethod } from "@prisma/client";
+import { Prisma, InvoiceType, PaymentMethod } from "@prisma/client";
 import prisma from "@/lib/db/prisma";
 import { generateInvoiceNumber } from "@/lib/server/serial";
 
@@ -25,15 +24,15 @@ export const createInvoiceWithItems = async (params: {
       branchId: params.branchId,
       type: params.type,
       invoiceNumber,
-      total: new Decimal(total),
-      due: new Decimal(total),
+      total: new Prisma.Decimal(total),
+      due: new Prisma.Decimal(total),
       status: total === 0 ? "PAID" : "PARTIAL",
       items: {
         create: params.items.map((item) => ({
           description: item.description,
           quantity: item.quantity ?? 1,
-          unitPrice: new Decimal(item.unitPrice),
-          total: new Decimal((item.quantity ?? 1) * item.unitPrice),
+          unitPrice: new Prisma.Decimal(item.unitPrice),
+          total: new Prisma.Decimal((item.quantity ?? 1) * item.unitPrice),
         })),
       },
       ...(params.studentId ? { studentId: params.studentId } : {}),
@@ -58,14 +57,14 @@ export const recordPayment = async (input: PaymentInput) => {
     if (!invoice) throw new Error("Invoice not found");
     if (invoice.voided) throw new Error("Cannot pay a void invoice");
     if (invoice.branchId !== input.branchId) throw new Error("Branch mismatch");
-    const amountDecimal = new Decimal(input.amount);
-    const newPaid = new Decimal(invoice.paid ?? 0).add(amountDecimal);
-    const newDue = new Decimal(invoice.total).sub(newPaid);
+    const amountDecimal = new Prisma.Decimal(input.amount);
+    const newPaid = new Prisma.Decimal(invoice.paid ?? 0).add(amountDecimal);
+    const newDue = new Prisma.Decimal(invoice.total).sub(newPaid);
     const updatedInvoice = await tx.invoice.update({
       where: { id: invoice.id },
       data: {
         paid: newPaid,
-        due: newDue.gte(0) ? newDue : new Decimal(0),
+        due: newDue.gte(0) ? newDue : new Prisma.Decimal(0),
         status: newDue.lte(0) ? "PAID" : "PARTIAL",
       },
     });

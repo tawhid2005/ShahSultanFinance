@@ -39,6 +39,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = user.id;
         session.user.role = user.role;
         session.user.branchId = user.branchId ?? null;
+        session.user.partnerId = user.partnerId ?? null;
       }
       return session;
     },

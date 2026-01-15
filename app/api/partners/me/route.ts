@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { Role } from "@prisma/client";
 import { getPartnerMonthlySummary } from "@/lib/services/partner";
 import { getCurrentUser } from "@/lib/server/session";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   const user = await getCurrentUser();
   if (!user || user.role !== Role.PARTNER || !user.partnerId) {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });

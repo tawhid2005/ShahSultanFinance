@@ -1,11 +1,15 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import prisma from "@/lib/db/prisma";
 import { getDhakaNow, toDhakaRange } from "@/lib/server/dates";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 export const getPartnerMonthlySummary = async (partnerId: string, month?: string) => {
   const partner = await prisma.partner.findUnique({

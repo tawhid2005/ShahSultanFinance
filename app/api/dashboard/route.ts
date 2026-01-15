@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { Role } from "@prisma/client";
 import { getDashboardMetrics } from "@/lib/services/dashboard";
 import { dashboardFilterSchema } from "@/lib/validators/dashboard";
@@ -13,7 +13,7 @@ const toParams = (searchParams: URLSearchParams) => {
   return obj;
 };
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   const user = await getCurrentUser();
   assertRole(user, [Role.SUPER_ADMIN, Role.BRANCH_MANAGER]);
   const filters = dashboardFilterSchema.parse(toParams(req.nextUrl.searchParams));
