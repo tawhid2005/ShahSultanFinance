@@ -24,5 +24,6 @@ services:
       NEXTAUTH_URL: "http://localhost:3000"
       ADMIN_EMAIL: "${ADMIN_EMAIL}"
       ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
+      PRISMA_CLIENT_ENGINE_TYPE: "binary"
 volumes:
   db-data:
